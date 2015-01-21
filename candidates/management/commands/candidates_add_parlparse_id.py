@@ -43,15 +43,27 @@ class Command(PersonParseMixin, PersonUpdateMixin, CandidacyMixin, BaseCommand):
         # Try and find the corresponding person in the popit instance
         name = u'{} {}'.format(member['firstname'], member['lastname'])
         query = u'"{}"'.format(name)
-        r = self.popit.api.search.persons.get(q=query)['result']
-        # Have we not got exactly one result?
-        if len(r) is not 1:
+        result = self.popit.api.search.persons.get(q=query)['result']
+        # Have we not got any results?
+        if len(result) is 0:
             if self.verbosity > 0:
-                msg = u'Got {} results for {}, skipping'
-                self.stderr.write(msg.format(len(r), name))
+                msg = u'No results for {}, skipping'
+                self.stderr.write(msg.format(name))
+            return
+        # Find the person with a matching constituency
+        person_match = None
+        for person in result:
+            constituency_name = person.get('standing_in') and person['standing_in'].get('2010', {}).get('name', '')
+            if constituency_name == member['constituency']:
+                person_match = person
+                break
+        if not person_match:
+            if self.verbosity > 0:
+                msg = u'{} result but no matches found for {}'
+                self.stderr.write(msg.format(len(result), name))
             return
         parlparse_id = self.id_mapping[name]
-        person_data = self.get_person(r[0]['id'])
+        person_data = self.get_person(person_match['id'])
         previous_versions = person_data.pop('versions')
         identifiers = person_data.get('identifiers', [])
         existing_identifiers = [i['identifier'] for i in identifiers]
