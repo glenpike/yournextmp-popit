@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.core.management.base import BaseCommand
 
 import json
@@ -10,6 +12,23 @@ from candidates.views import CandidacyMixin
 CONSTITUENCIES_JSON_FILE = 'data/mapit-WMC-generation-22.json'
 ALL_MEMBERS_XML_FILE = 'data/parlparse/members/all-members-2010.xml'
 PEOPLE_XML_FILE = 'data/parlparse/members/people.xml'
+
+PARTY_MAPPING = {
+    'Alliance': 'Alliance - Alliance Party of Northern Ireland',
+    'Con': 'Conservative Party',
+    'DUP': 'Democratic Unionist Party - D.U.P.',
+    'Green': 'Green Party',
+    'Ind': 'Independent',
+    'LDem': 'Liberal Democrats',
+    'Lab': 'Labour Party',
+    'PC': 'Plaid Cymru - The Party of Wales',
+    'Res': 'The Respect Party',
+    'SDLP': 'SDLP (Social Democratic & Labour Party)',
+    'SF': u'Sinn Féin',
+    'SNP': 'Scottish National Party (SNP)',
+    'SPK': 'Speaker seeking re-election',
+    'UKIP': 'UK Independence Party (UKIP)',
+}
 
 
 class Command(PersonParseMixin, PersonUpdateMixin, CandidacyMixin, BaseCommand):
@@ -51,19 +70,14 @@ class Command(PersonParseMixin, PersonUpdateMixin, CandidacyMixin, BaseCommand):
                 self.stderr.write(msg.format(name))
             return
         # Find the person with a matching constituency
-        person_match = None
-        for person in result:
-            constituency_name = person.get('standing_in') and person['standing_in'].get('2010', {}).get('name', '')
-            if constituency_name == member['constituency']:
-                person_match = person
-                break
-        if not person_match:
+        person = self.person_match(member=member, people=result)
+        if not person:
             if self.verbosity > 0:
                 msg = u'{} result but no matches found for {}'
                 self.stderr.write(msg.format(len(result), name))
             return
         parlparse_id = self.id_mapping[name]
-        person_data = self.get_person(person_match['id'])
+        person_data = self.get_person(person['id'])
         previous_versions = person_data.pop('versions')
         identifiers = person_data.get('identifiers', [])
         existing_identifiers = [i['identifier'] for i in identifiers]
@@ -91,3 +105,16 @@ class Command(PersonParseMixin, PersonUpdateMixin, CandidacyMixin, BaseCommand):
         if self.verbosity > 0:
             msg = u"Successfully updated {} with {}"
             self.stdout.write(msg.format(name, parlparse_id))
+
+    def person_match(self, people, member):
+        match = None
+        for person in people:
+            constituency_name = person.get('standing_in') and \
+                person['standing_in'].get('2010', {}).get('name', '')
+            party_name = person.get('party_memberships') and \
+                person['party_memberships'].get('2010', {}).get('name', '')
+            if constituency_name == member['constituency'] and \
+                    party_name == PARTY_MAPPING[member['party']]:
+                match = person
+                break
+        return match
