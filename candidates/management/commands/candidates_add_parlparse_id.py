@@ -64,7 +64,7 @@ class Command(PersonParseMixin, PersonUpdateMixin, CandidacyMixin, BaseCommand):
         query = u'"{}"'.format(name)
         result = self.popit.api.search.persons.get(q=query)['result']
         # Have we not got any results?
-        if len(result) is 0:
+        if len(result) == 0:
             if self.verbosity > 0:
                 msg = u'No results for {}, skipping'
                 self.stderr.write(msg.format(name))
