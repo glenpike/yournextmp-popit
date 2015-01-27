@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     'candidates',
     'cached_counts',
     'debug_toolbar',
+    'polls',
 )
 
 SITE_ID = 1

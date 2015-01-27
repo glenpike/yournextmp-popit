@@ -26,20 +26,7 @@
     {% block extra_js %}
     {% endblock %}
 
-    <title>{% block title %}YourNextMP - Help find candidates for the 2015 UK general election!{% endblock %}</title>
-
-    {% if settings.GOOGLE_ANALYTICS_ACCOUNT %}
-      <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', '{{ settings.GOOGLE_ANALYTICS_ACCOUNT }}', 'auto');
-        ga('send', 'pageview');
-
-      </script>
-    {% endif %}
+    <title>{% block title %}WhosYourNextMP - poll for the 2015 UK general election!{% endblock %}</title>
 
 </head>
 
@@ -47,19 +34,9 @@
   <div class="header">
     <div class="container">
       <div class="header__nav">
-        <a href="/" class="header__nav__logo">YourNextMP</a>
-        <a href="{% url 'help-about' %}" class="header__nav__logo">About</a>
+        <a href="/" class="header__nav__logo">WhosYourNextMP</a>
         <a href="{% url 'constituencies' %}" class="header__nav__logo">Constituencies</a>
         <a href="{% url 'reports_home' %}" class="header__nav__logo">Numbers</a>
-        {% if user.is_authenticated %}
-          <span class="header__nav__logout">
-            Signed in as <strong>{{ user.username }}</strong>
-            <a href="{% url 'account_logout' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}">Log out</a>
-          </span>
-        {% else %}
-          <a href="{% url 'account_login' %}{% if redirect_after_login %}?next={{ redirect_after_login }}{% endif %}"
-             class="header__nav__login">Log in to edit</a>
-        {% endif %}
       </div>
       <div class="header__hero">
         {% block hero %}
@@ -77,12 +54,8 @@
   </div>
   <div class="footer">
     <div class="container">
-      <div class="footer__links">
-        <p><a href="{% url 'help-api' %}">Open data API</a> &middot; <a href="{% url 'help-about' %}">About</a> &middot; <a href="https://github.com/mysociety/yournextmp-popit/issues">Issue tracker</a> &middot; <a href="{% url 'help-privacy' %}">Privacy policy</a></p>
-      </div>
       <div class="footer__bylines">
-        <p>Supported by <a href="https://fullfact.org">Full Fact</a>, <a href="http://unlockdemocracy.org.uk">Unlock Democracy</a>, and <a href="https://mysociety.org">mySociety</a>.</p>
-        <p>Built by <a href="https://democracyclub.org.uk/">Democracy Club</a>.</p>
+        <p>Based on code from <a href="https://yournextmp.com/">YourNextMP</a>.</p>
       </div>
     </div>
   </div>

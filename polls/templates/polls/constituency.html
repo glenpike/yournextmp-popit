@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block body_class %}constituency{% endblock %}
+
+{% block title %}Candidates (PPCs) for {{ constituency_name }} in the UK 2015 General Election{% endblock %}
+
+{% block hero %}
+  <h1>Candidates for {{ constituency_name }}</h1>
+{% endblock %}
+
+{% block content %}
+
+  <div class="candidates__known">
+
+    <h3>Known candidates for the 2015 general election</h3>
+
+    {% for c in candidates_2015 %}
+      {% if forloop.first %}
+        <ul class="candidate-list">
+      {% endif %}
+        <li class="candidates-list__person">
+          {% include 'polls/_person_in_list.html' with year='2015' %}
+        </li>
+
+      {% if forloop.last %}
+        </ul>
+      {% endif %}
+    {% empty %}
+      <div class="no-candidates row">
+        <p class="medium-8 columns"><strong>Oh no!</strong> We don’t know of any candidates in {{ constituency_name }}
+        for the 2015 general election yet.</p>
+      </div>
+    {% endfor %}
+
+  </div>
+
+<div>You can also find any <a href="{{ electionleaflets_url }}">election
+leaflets for {{ constituency_name }} at ElectionLeaflets.org</a>.</div>
+
+{% endblock %}

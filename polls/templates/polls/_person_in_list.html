@@ -1,0 +1,22 @@
+{% load staticfiles %}
+{% load imagefixes %}
+
+{% if c.image %}
+  <a href="{% url 'person-view' c.id c.name|slugify %}">
+    <img class="person-avatar" src="{{ c.popit_data.proxy_image|fixproxyurl }}/0/64"/>
+  </a>
+{% elif c.popit_data.gender == 'female' %}
+  <img class="person-avatar" src="{% static 'candidates/img/blank-woman.png' %}"/>
+{% else %}
+  <img class="person-avatar" src="{% static 'candidates/img/blank-man.png' %}"/>
+{% endif %}
+<div class="person-name-and-party">
+  <a href="{% url 'person-view' c.id c.name|slugify %}">{{ c.name }}</a>
+  {% if year == '2015' %}
+    <span class="party">{{c.parties.2015.name }}</span>
+  {% elif year == '2010' %}
+    <span class="party">{{c.parties.2010.name }}</span>
+  {% else %}
+    <span class="party">BUG: UNKNOWN YEAR</span>
+  {% endif %}
+</div>
