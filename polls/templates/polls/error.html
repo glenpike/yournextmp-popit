@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block body_class %}constituency{% endblock %}
+
+{% block title %}Error %}
+
+{% block hero %}
+  <h1>Error with your request</h1>
+{% endblock %}
+
+{% block content %}
+<p>There was an error with your request:</p>
+<p><strong>{{error_message}}</strong></p>
+{% endblock %}

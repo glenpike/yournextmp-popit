@@ -2,10 +2,9 @@ from django.db import models
 
 # Create your models here.
 
-class NoVote(models.Model):
+class Vote(models.Model):
     constituency_id = models.IntegerField(default=0)
-    created_date = models.DateTimeField('date created')
-
-class Vote(NoVote):
+    #Candidate ID may be -1 or a valid PopitPerson ID.
     candidate_id = models.IntegerField(default=0)
+    #Quick helper so we can calculate results.
     party_id = models.IntegerField(default=0)

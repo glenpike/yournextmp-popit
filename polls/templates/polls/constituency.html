@@ -11,21 +11,31 @@
 {% endblock %}
 
 {% block content %}
+  <h2>Are you going to Vote?</h2>
+  <form action="{% url 'novote' mapit_area_id %}" method="post">
+     {% csrf_token %}
+    <input type="submit" class="button" name="voting" id="choice-no" value="no"/>
+    <input type="button" class="hide button" name="vote-yes" id="choice-yes" value="yes"/>
+  </form>
 
   <div class="candidates__known">
 
     <h3>Known candidates for the 2015 general election</h3>
-
     {% for c in candidates_2015 %}
       {% if forloop.first %}
-        <ul class="candidate-list">
+        <form action="{% url 'vote' mapit_area_id %}" method="post">
+        {% csrf_token %}
+
+          <ul class="candidate-list">
       {% endif %}
-        <li class="candidates-list__person">
-          {% include 'polls/_person_in_list.html' with year='2015' %}
+          <li class="candidates-list__person">
+            {% include 'polls/_person_in_list.html' with counter=forloop.counter voting=True%}
         </li>
 
       {% if forloop.last %}
-        </ul>
+          </ul>
+          <input type="submit" class="button disabled" id="vote-submit" value="Vote"/>
+        </form>
       {% endif %}
     {% empty %}
       <div class="no-candidates row">
@@ -38,5 +48,14 @@
 
 <div>You can also find any <a href="{{ electionleaflets_url }}">election
 leaflets for {{ constituency_name }} at ElectionLeaflets.org</a>.</div>
-
+<script>
+  $(document).ready(function() {
+    $('.vote-radio').prop('disabled', true);
+    $('#vote-submit').prop('disabled', true);
+    $('#choice-yes').show().click(function() {
+      $('.vote-radio').removeProp('disabled');
+      $('#vote-radio').removeProp('disabled').removeClass('disabled');
+    })
+  })
+</script>
 {% endblock %}

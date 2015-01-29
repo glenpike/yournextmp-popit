@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% load poll_extras %}
+
+{% block body_class %}constituency{% endblock %}
+
+{% block title %}Current Poll Results for {{ constituency_name }} in the UK 2015 General Election{% endblock %}
+
+{% block hero %}
+  <h1>Current Poll for {{ constituency_name }}</h1>
+{% endblock %}
+
+{% block content %}
+
+<pre>{% debug_object_dump votes %}</pre>
+
+<div class="candidates__known">
+    {% for c in candidates_2015 %}
+      {% if forloop.first %}
+      <ul class="candidate-list">
+      {% endif %}
+          <li class="candidates-list__person row">
+            {% include 'polls/_person_in_list.html' with counter=forloop.counter %}
+        </li>
+
+      {% if forloop.last %}
+          </ul>
+        {% endif %}
+    {% empty %}
+      <div class="no-candidates row">
+        <p class="medium-8 columns"><strong>Oh no!</strong> We don’t know of any candidates in {{ constituency_name }}
+        for the 2015 general election yet.</p>
+      </div>
+    {% endfor %}
+</div>
+
+<div class="nationwide__results">
+    {% for p in nationwide_results %}
+      {% if forloop.first %}
+      <ul class="party-list">
+      {% endif %}
+          <li class="party-list__party row">
+            {{ p.name }}
+            {{ p.count }}
+        </li>
+
+      {% if forloop.last %}
+          </ul>
+        {% endif %}
+    {% empty %}
+      <div class="no-parties row">
+        <p class="medium-8 columns"><strong>Oh no!</strong> We don’t know of any parties for the 2015 general election yet.</p>
+      </div>
+    {% endfor %}
+</div>
+{% endblock %}

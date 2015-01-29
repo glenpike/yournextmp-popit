@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load imagefixes %}
-
+<div class="row">
+<span class="small-2 large-2 columns">
 {% if c.image %}
   <a href="{% url 'person-view' c.id c.name|slugify %}">
     <img class="person-avatar" src="{{ c.popit_data.proxy_image|fixproxyurl }}/0/64"/>
@@ -10,13 +11,15 @@
 {% else %}
   <img class="person-avatar" src="{% static 'candidates/img/blank-man.png' %}"/>
 {% endif %}
-<div class="person-name-and-party">
-  <a href="{% url 'person-view' c.id c.name|slugify %}">{{ c.name }}</a>
-  {% if year == '2015' %}
+</span>
+<span class="person-name-and-party small-8 large-8 columns">
+  <a href="{% url 'person-view' c.id c.name|slugify %}">
+     <label for="vote-{{ counter }}">{{ c.name }}</a>
     <span class="party">{{c.parties.2015.name }}</span>
-  {% elif year == '2010' %}
-    <span class="party">{{c.parties.2010.name }}</span>
-  {% else %}
-    <span class="party">BUG: UNKNOWN YEAR</span>
-  {% endif %}
+</span>
+{% if voting = True %}
+<span class="person-vote-choice small-2 large-2 columns">
+    <input type="radio" class="vote-radio" name="vote" id="vote-{{ counter }}" value="{{c.id}}"/>
+</span>
+{% endif %}
 </div>
