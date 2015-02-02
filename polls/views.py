@@ -3,8 +3,11 @@ from django.db import models
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.http import urlquote
-from django.views.generic import TemplateView
-from candidates.popit import PopItApiMixin
+from django.views.generic import TemplateView, FormView
+
+from slumber.exceptions import HttpClientError
+
+from candidates.popit import PopItApiMixin, create_popit_api_object
 
 from candidates.models import (
     PopItPerson,
@@ -13,6 +16,7 @@ from candidates.models import (
 )
 
 from polls.models import Vote
+from polls.forms import VoteForm
 
 # Create your views here.
 def get_constituency_data(api, mapit_area_id, context):
@@ -62,8 +66,18 @@ def vote(request, mapit_area_id):
             'error_message': "You didn't select a constituency.",
             })
     else:
-        #If so make sure Popit Person exists
-            #Add a Vote
+        try :
+            candidate = request.POST['candidate']
+            #If so make sure Popit Person exists
+            person = PopItPerson.create_from_popit(create_popit_api_object(), candidate)
+            party_id = person.parties['2015'].get('id')
+            v = Vote(constituency_id=mapit_area_id, candidate_id=person.id, party_id=party_id)
+            v.save();
+        except HttpClientError as e:
+            return render(request, 'polls/error.html', {
+                'error_message': "You didn't select a candidate.",
+            })
+
 
         return HttpResponseRedirect(reverse('results', args=(mapit_area_id,)))
 
@@ -75,12 +89,32 @@ class ConstituencyResultsView(PopItApiMixin, TemplateView):
         mapit_area_id = kwargs['mapit_area_id']
         get_constituency_data(self.api, mapit_area_id, context)
 
-        votes = Vote.objects.filter(constituency_id=mapit_area_id).values('candidate_id').annotate(n=models.Count("pk"))
+        votes = Vote.objects.filter(constituency_id=mapit_area_id)#.values('candidate_id').annotate(n=models.Count("pk"))
         context['votes'] = votes
         #Need to munge the data here - this is not currently a "count"
 
         return context
 
+"""
+class ConstituencyVoteView(PopItApiMixin, FormView):
+    form_class = VoteForm()
+
+    def form_valid(self, form):
+#def vote(request, mapit_area_id):
+        #Make sure Popit area exists
+        constituency_name = get_constituency_name_from_mapit_id(mapit_area_id)
+        if constituency_name is None:
+            return render(request, 'polls/error.html', {
+                'error_message': "You didn't select a constituency.",
+                })
+        else:
+            #If so make sure Popit Person exists
+            person = PopItPerson.create_from_popit(self.api, form.cleaned_data['candidate'])
+            print 'person ', person
+            #Add a Vote
+
+            return HttpResponseRedirect(reverse('results', args=(mapit_area_id,)))
+"""
 class ConstituencyDetailView(PopItApiMixin, TemplateView):
     template_name = 'polls/constituency.html'
 

@@ -54,7 +54,7 @@ leaflets for {{ constituency_name }} at ElectionLeaflets.org</a>.</div>
     $('#vote-submit').prop('disabled', true);
     $('#choice-yes').show().click(function() {
       $('.vote-radio').removeProp('disabled');
-      $('#vote-radio').removeProp('disabled').removeClass('disabled');
+      $('#vote-submit').removeProp('disabled').removeClass('disabled');
     })
   })
 </script>

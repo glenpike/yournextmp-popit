@@ -14,12 +14,12 @@
 </span>
 <span class="person-name-and-party small-8 large-8 columns">
   <a href="{% url 'person-view' c.id c.name|slugify %}">
-     <label for="vote-{{ counter }}">{{ c.name }}</a>
+     <label for="candidate-{{ counter }}">{{ c.name }}</a>
     <span class="party">{{c.parties.2015.name }}</span>
 </span>
 {% if voting = True %}
 <span class="person-vote-choice small-2 large-2 columns">
-    <input type="radio" class="vote-radio" name="vote" id="vote-{{ counter }}" value="{{c.id}}"/>
+    <input type="radio" class="candidate-radio" name="candidate" id="candidate-{{ counter }}" value="{{c.id}}"/>
 </span>
 {% endif %}
 </div>
